@@ -366,13 +366,42 @@ async function fetchData() {
     renderAll(); return;
   }
   try {
-    const res = await fetch(SCRIPT_URL+'?action=get');
-    const json = await res.json();
-    if (json.data) { allData = json.data; renderAll(); }
+    // Apps Script는 리다이렉트를 하므로 no-cors GET → JSONP 방식 우회
+    const data = await fetchViaJsonp(SCRIPT_URL + '?action=get&callback=__cb__');
+    if (data && data.data) {
+      allData = data.data;
+      // 로컬에도 캐시
+      localStorage.setItem('hanbom_local_v2', JSON.stringify(allData));
+    }
   } catch(e) {
+    // 실패 시 로컬 캐시 사용
     try { allData = JSON.parse(localStorage.getItem('hanbom_local_v2')||'[]'); } catch(e2){ allData=[]; }
-    renderAll();
   }
+  renderAll();
+}
+
+function fetchViaJsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = '__hanbomCb_' + Date.now();
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('timeout'));
+    }, 8000);
+    window[cbName] = (data) => {
+      cleanup();
+      resolve(data);
+    };
+    function cleanup() {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    // callback 파라미터를 실제 함수명으로
+    script.src = url.replace('__cb__', cbName);
+    script.onerror = () => { cleanup(); reject(new Error('script error')); };
+    document.head.appendChild(script);
+  });
 }
 
 // ── SUBMIT ───────────────────────────────────────────
