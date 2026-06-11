@@ -362,21 +362,52 @@ function renderBar(idx, includeMe) {
 
 // ── FETCH ─────────────────────────────────────────────
 async function fetchData() {
+
   if (!SCRIPT_URL) {
-    try { allData = JSON.parse(localStorage.getItem('hanbom_local_v2')||'[]'); } catch(e){ allData=[]; }
-    renderAll(); return;
+
+    try {
+      allData = JSON.parse(
+        localStorage.getItem('hanbom_local_v2') || '[]'
+      );
+    } catch(e) {
+      allData = [];
+    }
+
+    renderAll();
+    return;
   }
+
   try {
-    const response = await fetch(SCRIPT_URL + '?action=get');
-    const data = await response.json();
+
+    const data = await fetchViaJsonp(
+      SCRIPT_URL +
+      '?action=get&callback=__cb__'
+    );
 
     if (data && data.data) {
+
       allData = data.data;
-      localStorage.setItem('hanbom_local_v2', JSON.stringify(allData));
+
+      localStorage.setItem(
+        'hanbom_local_v2',
+        JSON.stringify(allData)
+      );
     }
+
   } catch(e) {
-    try { allData = JSON.parse(localStorage.getItem('hanbom_local_v2')||'[]'); } catch(e2){ allData=[]; }
+
+    console.error(e);
+
+    try {
+      allData = JSON.parse(
+        localStorage.getItem('hanbom_local_v2') || '[]'
+      );
+    } catch(e2) {
+      allData = [];
+    }
+
   }
+
   renderAll();
 }
 
@@ -425,7 +456,7 @@ async function submitAll() {
   method: 'POST',
   mode: 'no-cors',
   headers: {
-    'Content-Type': 'text/plain;charset=utf-8'
+    'Content-Type':'text/plain'
   },
   body: JSON.stringify(entry)
 });
