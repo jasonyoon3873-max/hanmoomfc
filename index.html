@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한봄FC ⚽ 2026 월드컵 승부예측</title>
+<meta property="og:title" content="한봄FC ⚽ 2026 월드컵 승부예측">
+<meta property="og:description" content="한봄FC 멤버들의 2026 월드컵 승부예측에 참여하세요!">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #C0392B;
+    --red-dark: #922B21;
+    --red-light: #FADBD8;
+    --blue: #1A5276;
+    --gray: #6C757D;
+    --bg: #F8F9FA;
+    --card: #FFFFFF;
+    --border: #E9ECEF;
+    --text: #212529;
+    --text-muted: #6C757D;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(150deg, #C0392B 0%, #922B21 60%, #1A5276 100%);
+    padding: 36px 20px 28px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '⚽';
+    position: absolute;
+    font-size: 160px;
+    opacity: 0.07;
+    top: -20px; right: -20px;
+    line-height: 1;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    opacity: 0.75;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .hero-title {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .hero-sub { font-size: 14px; opacity: 0.8; margin-bottom: 20px; }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    background: rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 14px 24px;
+    backdrop-filter: blur(4px);
+    display: inline-flex;
+  }
+  .hstat-num { font-size: 22px; font-weight: 700; }
+  .hstat-label { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 480px; margin: 0 auto; padding: 20px 16px 48px; }
+
+  /* ── TABS ── */
+  .tab-bar {
+    display: flex;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .tab {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .tab.active {
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(192,57,43,0.35);
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin: 20px 0 10px;
+  }
+
+  /* ── NAME INPUT ── */
+  .name-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .name-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+  .name-row { display: flex; gap: 8px; }
+  .name-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .name-row input:focus { border-color: var(--red); }
+  .submit-btn {
+    padding: 10px 18px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, transform 0.1s;
+    font-family: inherit;
+  }
+  .submit-btn:hover { background: var(--red-dark); }
+  .submit-btn:active { transform: scale(0.97); }
+  .submit-btn:disabled { opacity: 0.45; cursor: default; }
+
+  /* ── MATCH CARD ── */
+  .match-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1.5px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .match-card.highlighted { border-color: var(--red); }
+  .match-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .match-date { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .match-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--red-light);
+    color: var(--red);
+  }
+  .teams {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .team { text-align: center; flex: 1; }
+  .team-flag { font-size: 32px; margin-bottom: 4px; line-height: 1; }
+  .team-name { font-size: 13px; font-weight: 600; }
+  .vs { font-size: 13px; color: var(--text-muted); font-weight: 700; min-width: 28px; text-align: center; }
+
+  /* ── VOTE BUTTONS ── */
+  .vote-section { border-top: 1px solid var(--border); padding-top: 14px; }
+  .vote-hint { font-size: 12px; color: var(--text-muted); text-align: center; margin-bottom: 9px; }
+  .vote-btns { display: flex; gap: 7px; }
+  .vbtn {
+    flex: 1;
+    padding: 9px 6px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--bg);
+    color: var(--text-muted);
+    font-family: inherit;
+    transition: all 0.15s;
+    line-height: 1.3;
+  }
+  .vbtn:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }
+  .vbtn.sel-win  { background: var(--red);  color: #fff; border-color: var(--red);  }
+  .vbtn.sel-draw { background: var(--gray); color: #fff; border-color: var(--gray); }
+  .vbtn.sel-lose { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+  /* ── BARS ── */
+  .bars { margin-top: 13px; display: flex; flex-direction: column; gap: 5px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; }
+  .bar-lbl { font-size: 11px; color: var(--text-muted); width: 52px; flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; height: 7px; background: var(--border); border-radius: 20px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 20px; transition: width 0.5s cubic-bezier(.4,0,.2,1); min-width: 2px; }
+  .bar-pct { font-size: 11px; color: var(--text-muted); width: 30px; flex-shrink: 0; font-weight: 600; }
+
+  /* ── STAT GRID ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .stat-num { font-size: 26px; font-weight: 700; color: var(--red); }
+  .stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+
+  /* ── LEADERBOARD ── */
+  .lb-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .lb-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank { font-size: 13px; font-weight: 700; width: 22px; flex-shrink: 0; text-align: center; color: var(--text-muted); }
+  .lb-rank.r1 { color: #D4AC0D; }
+  .lb-rank.r2 { color: #909497; }
+  .lb-rank.r3 { color: #A04000; }
+  .lb-name { flex: 1; font-size: 14px; font-weight: 600; }
+  .lb-dots { display: flex; gap: 5px; }
+  .dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .dot.win  { background: var(--red); }
+  .dot.draw { background: var(--gray); }
+  .dot.lose { background: var(--blue); }
+  .dot.none { background: var(--border); }
+  .lb-time { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+
+  /* ── EMPTY ── */
+  .empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 20px; line-height: 1.8; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: #1A1A1A; color: #fff;
+    padding: 11px 22px; border-radius: 30px;
+    font-size: 13px; font-weight: 600;
+    opacity: 0; transition: all 0.3s cubic-bezier(.4,0,.2,1);
+    pointer-events: none; z-index: 9999; white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── SPINNER ── */
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── CONFIG MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 1000;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border-radius: var(--radius);
+    padding: 24px; width: 100%; max-width: 420px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  }
+  .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6; }
+  .modal input {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 13px; font-family: inherit; margin-bottom: 10px;
+    background: var(--bg); color: var(--text); outline: none;
+  }
+  .modal input:focus { border-color: var(--red); }
+  .modal-btns { display: flex; gap: 8px; margin-top: 4px; }
+  .modal-btn {
+    flex: 1; padding: 10px; border: none; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+  }
+  .modal-btn.primary { background: var(--red); color: #fff; }
+  .modal-btn.secondary { background: var(--border); color: var(--text-muted); }
+  .setup-link { font-size: 12px; color: var(--red); text-decoration: none; font-weight: 600; }
+  .settings-btn {
+    position: fixed; bottom: 20px; right: 16px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 50%; width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">2026 FIFA 월드컵 — A조</div>
+  <div class="hero-title">한봄FC ⚽ 승부예측</div>
+  <div class="hero-sub">한국 조별리그 3경기 예측에 참여하세요</div>
+  <div class="hero-stats">
+    <div class="hstat">
+      <div class="hstat-num" id="hTotal">0</div>
+      <div class="hstat-label">참여자</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-num" id="hVotes">0</div>
+      <div class="hstat-label">총 예측</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-num" id="hWinRate">-</div>
+      <div class="hstat-label">한국 승 예측률</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('predict')">예측하기</button>
+    <button class="tab" onclick="switchTab('stats')">통계</button>
+    <button class="tab" onclick="switchTab('board')">순위표</button>
+  </div>
+
+  <!-- ===== PREDICT TAB ===== -->
+  <div id="view-predict" class="view active">
+    <div class="name-card">
+      <p>닉네임을 입력하고 3경기를 모두 예측한 뒤 제출하세요</p>
+      <div class="name-row">
+        <input type="text" id="nameInput" placeholder="닉네임 (예: 홍길동)" maxlength="12">
+        <button class="submit-btn" id="submitBtn" onclick="submitAll()">제출</button>
+      </div>
+    </div>
+
+    <div class="section-label">조별리그 경기 일정</div>
+
+    <!-- Match 0: 체코 -->
+    <div class="match-card highlighted" id="card-0">
+      <div class="match-meta">
+        <span class="match-date">📅 6월 12일(목) 오전 11:00 · 과달라하라</span>
+        <span class="match-badge">1차전</span>
+      </div>
+      <div class="teams">
+        <div class="team"><div class="team-flag">🇰🇷</div><div class="team-name">대한민국</div></div>
+        <div class="vs">VS</div>
+        <div class="team"><div class="team-flag">🇨🇿</div><div class="team-name">체코</div></div>
+      </div>
+      <div class="vote-section">
+        <div class="vote-hint">결과를 예측하세요</div>
+        <div class="vote-btns">
+          <button class="vbtn" id="v0-win"  onclick="vote(0,'win')">🇰🇷 한국 승</button>
+          <button class="vbtn" id="v0-draw" onclick="vote(0,'draw')">무승부</button>
+          <button class="vbtn" id="v0-lose" onclick="vote(0,'lose')">체코 승 🇨🇿</button>
+        </div>
+        <div class="bars" id="bar0" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Match 1: 멕시코 -->
+    <div class="match-card" id="card-1">
+      <div class="match-meta">
+        <span class="match-date">📅 6월 19일(금) 오전 10:00 · 과달라하라</span>
+        <span class="match-badge">2차전</span>
+      </div>
+      <div class="teams">
+        <div class="team"><div class="team-flag">🇰🇷</div><div class="team-name">대한민국</div></div>
+        <div class="vs">VS</div>
+        <div class="team"><div class="team-flag">🇲🇽</div><div class="team-name">멕시코</div></div>
+      </div>
+      <div class="vote-section">
+        <div class="vote-hint">결과를 예측하세요</div>
+        <div class="vote-btns">
+          <button class="vbtn" id="v1-win"  onclick="vote(1,'win')">🇰🇷 한국 승</button>
+          <button class="vbtn" id="v1-draw" onclick="vote(1,'draw')">무승부</button>
+          <button class="vbtn" id="v1-lose" onclick="vote(1,'lose')">멕시코 승 🇲🇽</button>
+        </div>
+        <div class="bars" id="bar1" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Match 2: 남아공 -->
+    <div class="match-card" id="card-2">
+      <div class="match-meta">
+        <span class="match-date">📅 6월 25일(목) 오전 10:00 · 몬테레이</span>
+        <span class="match-badge">3차전</span>
+      </div>
+      <div class="teams">
+        <div class="team"><div class="team-flag">🇰🇷</div><div class="team-name">대한민국</div></div>
+        <div class="vs">VS</div>
+        <div class="team"><div class="team-flag">🇿🇦</div><div class="team-name">남아공</div></div>
+      </div>
+      <div class="vote-section">
+        <div class="vote-hint">결과를 예측하세요</div>
+        <div class="vote-btns">
+          <button class="vbtn" id="v2-win"  onclick="vote(2,'win')">🇰🇷 한국 승</button>
+          <button class="vbtn" id="v2-draw" onclick="vote(2,'draw')">무승부</button>
+          <button class="vbtn" id="v2-lose" onclick="vote(2,'lose')">남아공 승 🇿🇦</button>
+        </div>
+        <div class="bars" id="bar2" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STATS TAB ===== -->
+  <div id="view-stats" class="view">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">총 참여자</div></div>
+      <div class="stat-card"><div class="stat-num" id="sWinRate">0%</div><div class="stat-lbl">한국 승 예측률</div></div>
+      <div class="stat-card"><div class="stat-num" id="sSweep">0명</div><div class="stat-lbl">3전 전승 예측</div></div>
+      <div class="stat-card"><div class="stat-num" id="sTop">-</div><div class="stat-lbl">가장 많은 예측</div></div>
+    </div>
+    <div class="section-label">경기별 예측 분포</div>
+    <div id="statsDetail"><div class="empty">데이터를 불러오는 중...</div></div>
+  </div>
+
+  <!-- ===== BOARD TAB ===== -->
+  <div id="view-board" class="view">
+    <div class="section-label">전체 참여자 예측 현황 (<span id="lbCount">0</span>명)</div>
+    <div class="lb-card" id="leaderboard">
+      <div class="empty">아직 예측한 멤버가 없어요 👀<br>첫 번째로 예측해보세요!</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SETTINGS BUTTON -->
+<button class="settings-btn" onclick="openModal()" title="Google Sheets 설정">⚙️</button>
+
+<!-- CONFIG MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2>⚙️ Google Sheets 연동</h2>
+    <p>Google Apps Script 웹앱 URL을 입력하면 데이터가 스프레드시트에 저장되고 실시간으로 공유됩니다.<br><br>
+    설정 방법은 <strong>README.md</strong>를 참고하세요.</p>
+    <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/..." />
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeModal()">취소</button>
+      <button class="modal-btn primary" onclick="saveConfig()">저장</button>
+    </div>
+    <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
+      <div style="font-size:12px; color:var(--text-muted); line-height:1.7;">
+        📌 URL 미설정 시 로컬 저장소만 사용됩니다 (기기 간 공유 불가)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────
+// 배포 후 ⚙️ 버튼을 눌러 Google Apps Script URL을 입력하거나
+// 아래 SCRIPT_URL에 직접 URL을 붙여넣으세요.
+let SCRIPT_URL = localStorage.getItem('hanbom_script_url') || '';
+
+const MATCHES = [
+  { opp: '체코', oppFlag: '🇨🇿', date: '6월 12일(목) 11:00' },
+  { opp: '멕시코', oppFlag: '🇲🇽', date: '6월 19일(금) 10:00' },
+  { opp: '남아공', oppFlag: '🇿🇦', date: '6월 25일(목) 10:00' },
+];
+
+const RESULT_LABEL = { win: '한국 승', draw: '무승부', lose: '상대 승' };
+const COLORS = { win: '#C0392B', draw: '#6C757D', lose: '#1A5276' };
+
+let myVotes = [null, null, null];
+let allData = [];
+
+// ── INIT ────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  if (SCRIPT_URL) document.getElementById('scriptUrl').value = SCRIPT_URL;
+  fetchData();
+  setInterval(fetchData, 30000); // 30초마다 자동 갱신
+});
+
+// ── FETCH DATA ───────────────────────────────────────
+async function fetchData() {
+  if (!SCRIPT_URL) {
+    // 로컬 폴백
+    try { allData = JSON.parse(localStorage.getItem('hanbom_local') || '[]'); } catch(e) { allData = []; }
+    renderAll();
+    return;
+  }
+  try {
+    const res = await fetch(SCRIPT_URL + '?action=get', { method: 'GET' });
+    const json = await res.json();
+    if (json.data) { allData = json.data; renderAll(); }
+  } catch(e) {
+    // 네트워크 오류 시 로컬 폴백
+    try { allData = JSON.parse(localStorage.getItem('hanbom_local') || '[]'); } catch(e2) { allData = []; }
+    renderAll();
+  }
+}
+
+// ── VOTE ─────────────────────────────────────────────
+function vote(matchIdx, result) {
+  myVotes[matchIdx] = result;
+  ['win','draw','lose'].forEach(r => {
+    const b = document.getElementById('v'+matchIdx+'-'+r);
+    b.className = 'vbtn' + (r === result ? ' sel-'+r : '');
+  });
+  renderBar(matchIdx, true);
+}
+
+function renderBar(idx, includeMe) {
+  const bar = document.getElementById('bar'+idx);
+  const votes = allData.map(s => s.votes && s.votes[idx]).filter(Boolean);
+  if (includeMe && myVotes[idx]) votes.push(myVotes[idx]);
+  if (!votes.length) { bar.style.display='none'; return; }
+  const total = votes.length;
+  const c = { win:0, draw:0, lose:0 };
+  votes.forEach(v => c[v]++);
+  bar.style.display = 'flex';
+  bar.innerHTML = ['win','draw','lose'].map(r => {
+    const pct = Math.round(c[r]/total*100);
+    return `<div class="bar-row">
+      <span class="bar-lbl">${r==='win'?'한국 승':r==='draw'?'무승부':MATCHES[idx].opp+' 승'}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${COLORS[r]};"></div></div>
+      <span class="bar-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ── SUBMIT ───────────────────────────────────────────
+async function submitAll() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { showToast('⚠️ 닉네임을 입력해주세요'); return; }
+  if (myVotes.some(v => v === null)) { showToast('⚠️ 3경기 모두 예측해주세요'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>제출 중...';
+
+  const entry = { name, votes: [...myVotes], ts: new Date().toISOString() };
+
+  if (SCRIPT_URL) {
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry)
+      });
+      // no-cors이므로 응답 확인 불가, 낙관적 업데이트
+      upsertLocal(entry);
+      allData = JSON.parse(localStorage.getItem('hanbom_local') || '[]');
+      renderAll();
+      showToast('✅ ' + name + '님의 예측이 등록됐어요!');
+      setTimeout(fetchData, 2000);
+    } catch(e) {
+      showToast('❌ 오류가 발생했어요. 다시 시도해주세요.');
+    }
+  } else {
+    upsertLocal(entry);
+    allData = JSON.parse(localStorage.getItem('hanbom_local') || '[]');
+    renderAll();
+    showToast('✅ ' + name + '님의 예측이 등록됐어요! (로컬 저장)');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '제출';
+}
+
+function upsertLocal(entry) {
+  let local = [];
+  try { local = JSON.parse(localStorage.getItem('hanbom_local') || '[]'); } catch(e) {}
+  const idx = local.findIndex(s => s.name === entry.name);
+  if (idx >= 0) local[idx] = entry; else local.push(entry);
+  localStorage.setItem('hanbom_local', JSON.stringify(local));
+}
+
+// ── RENDER ALL ───────────────────────────────────────
+function renderAll() {
+  const total = allData.length;
+  const allVotes = allData.flatMap(s => (s.votes||[]).filter(Boolean));
+  const winCount = allVotes.filter(v => v==='win').length;
+  const winRate = allVotes.length ? Math.round(winCount/allVotes.length*100) : 0;
+
+  // Hero stats
+  document.getElementById('hTotal').textContent = total;
+  document.getElementById('hVotes').textContent = allVotes.length;
+  document.getElementById('hWinRate').textContent = total ? winRate+'%' : '-';
+
+  // Stats tab
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sWinRate').textContent = winRate + '%';
+  const sweepCount = allData.filter(s => s.votes && s.votes.every(v => v==='win')).length;
+  document.getElementById('sSweep').textContent = sweepCount + '명';
+
+  // most popular overall
+  const ov = {win:0,draw:0,lose:0};
+  allVotes.forEach(v => ov[v]++);
+  const top = Object.entries(ov).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('sTop').textContent = total ? RESULT_LABEL[top[0]] : '-';
+
+  // Per-match bars in predict tab
+  for (let i = 0; i < 3; i++) renderBar(i, !!myVotes[i]);
+
+  // Stats detail
+  let html = '';
+  for (let i = 0; i < 3; i++) {
+    const mvotes = allData.map(s => s.votes && s.votes[i]).filter(Boolean);
+    const t = mvotes.length;
+    const c = {win:0,draw:0,lose:0};
+    mvotes.forEach(v => c[v]++);
+    html += `<div class="match-card" style="margin-bottom:12px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px;">🇰🇷 한국 vs ${MATCHES[i].oppFlag} ${MATCHES[i].opp}</div>
+      ${['win','draw','lose'].map(r => {
+        const pct = t ? Math.round(c[r]/t*100) : 0;
+        return `<div class="bar-row">
+          <span class="bar-lbl">${r==='win'?'한국 승':r==='draw'?'무승부':MATCHES[i].opp+' 승'}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${COLORS[r]};"></div></div>
+          <span class="bar-pct">${pct}%</span>
+        </div>`;
+      }).join('')}
+      <div style="font-size:11px;color:var(--text-muted);margin-top:10px;">${t}명 참여</div>
+    </div>`;
+  }
+  document.getElementById('statsDetail').innerHTML = html || '<div class="empty">아직 예측 데이터가 없어요</div>';
+
+  // Leaderboard
+  document.getElementById('lbCount').textContent = total;
+  if (!total) {
+    document.getElementById('leaderboard').innerHTML = '<div class="empty">아직 예측한 멤버가 없어요 👀<br>첫 번째로 예측해보세요!</div>';
+    return;
+  }
+  const sorted = [...allData].sort((a,b) => new Date(b.ts) - new Date(a.ts));
+  const rankClass = ['r1','r2','r3'];
+  document.getElementById('leaderboard').innerHTML = sorted.map((s, i) => {
+    const dots = (s.votes||[null,null,null]).map(v => v
+      ? `<div class="dot ${v}" title="${RESULT_LABEL[v]}">${v==='win'?'승':v==='draw'?'무':'패'}</div>`
+      : `<div class="dot none"></div>`
+    ).join('');
+    const timeStr = s.ts ? new Date(s.ts).toLocaleDateString('ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<div class="lb-row">
+      <span class="lb-rank ${rankClass[i]||''}">${i+1}</span>
+      <div style="flex:1;">
+        <div class="lb-name">${escHtml(s.name)}</div>
+        <div class="lb-time">${timeStr}</div>
+      </div>
+      <div class="lb-dots">${dots}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── UTILS ────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['predict','stats','board'][i]===tab));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+function openModal() {
+  document.getElementById('scriptUrl').value = SCRIPT_URL || '';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function saveConfig() {
+  const url = document.getElementById('scriptUrl').value.trim();
+  SCRIPT_URL = url;
+  localStorage.setItem('hanbom_script_url', url);
+  closeModal();
+  showToast('✅ 설정이 저장됐어요!');
+  if (url) fetchData();
+}
+document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
