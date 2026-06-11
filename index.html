@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -366,15 +367,14 @@ async function fetchData() {
     renderAll(); return;
   }
   try {
-    // Apps Script는 리다이렉트를 하므로 no-cors GET → JSONP 방식 우회
-    const data = await fetchViaJsonp(SCRIPT_URL + '?action=get&callback=__cb__');
+    const response = await fetch(SCRIPT_URL + '?action=get');
+    const data = await response.json();
+
     if (data && data.data) {
       allData = data.data;
-      // 로컬에도 캐시
       localStorage.setItem('hanbom_local_v2', JSON.stringify(allData));
     }
   } catch(e) {
-    // 실패 시 로컬 캐시 사용
     try { allData = JSON.parse(localStorage.getItem('hanbom_local_v2')||'[]'); } catch(e2){ allData=[]; }
   }
   renderAll();
@@ -421,7 +421,9 @@ async function submitAll() {
 
   if (SCRIPT_URL) {
     try {
-      await fetch(SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(entry)});
+      const response = await fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(entry)});
+      const result = await response.json();
+      if(result.error){ throw new Error(result.error); }
       upsertLocal(entry);
       allData = JSON.parse(localStorage.getItem('hanbom_local_v2')||'[]');
       renderAll();
