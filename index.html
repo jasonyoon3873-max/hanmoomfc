@@ -435,7 +435,7 @@ function fetchViaJsonp(url) {
   });
 }
 
-// ── SUBMIT ───────────────────────────────────────────
+// ── SUBMIT (수정된 버전) ───────────────────────────────────────────
 async function submitAll() {
   const name = document.getElementById('nameInput').value.trim();
   if (!name) { showToast('⚠️ 닉네임을 입력해주세요'); return; }
@@ -446,32 +446,41 @@ async function submitAll() {
 
   const entry = {
     name,
-    scores: myScores.map(s=>({kor:s.kor, opp:s.opp})),
+    scores: myScores.map(s => ({ kor: s.kor, opp: s.opp })),
     ts: new Date().toISOString()
   };
 
   if (SCRIPT_URL) {
     try {
-      await fetch(SCRIPT_URL, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: {
-    'Content-Type':'text/plain'
-  },
-  body: JSON.stringify(entry)
-});
+      // JSONP 방식을 사용하여 action=submit 파라미터로 데이터를 보냅니다.
+      const encodedData = encodeURIComponent(JSON.stringify(entry));
+      const url = `${SCRIPT_URL}?action=submit&data=${encodedData}&callback=__cb__`;
+      
+      const response = await fetchViaJsonp(url);
+      
+      if (response && response.success) {
+        showToast('✅ ' + name + '님의 예측이 서버에 등록됐어요!');
+        // 등록 후 즉시 최신 데이터를 다시 불러옵니다.
+        await fetchData(); 
+      } else {
+        throw new Error(response.error || 'Server error');
+      }
+    } catch (e) { 
+      console.error(e);
+      showToast('❌ 오류가 발생했어요. 다시 시도해주세요.'); 
+      // 실패 시 백업용으로 로컬에 우선 저장
       upsertLocal(entry);
-      allData = JSON.parse(localStorage.getItem('hanbom_local_v2')||'[]');
+      allData = JSON.parse(localStorage.getItem('hanbom_local_v2') || '[]');
       renderAll();
-      showToast('✅ '+name+'님의 예측이 등록됐어요!');
-      setTimeout(fetchData, 2000);
-    } catch(e) { showToast('❌ 오류가 발생했어요. 다시 시도해주세요.'); }
+    }
   } else {
+    // URL이 없을 때의 로컬 저장 로직 유지
     upsertLocal(entry);
-    allData = JSON.parse(localStorage.getItem('hanbom_local_v2')||'[]');
+    allData = JSON.parse(localStorage.getItem('hanbom_local_v2') || '[]');
     renderAll();
-    showToast('✅ '+name+'님의 예측이 등록됐어요! (로컬 저장)');
+    showToast('✅ ' + name + '님의 예측이 등록됐어요! (로컬 저장)');
   }
+  
   btn.disabled = false;
   btn.innerHTML = '제출';
 }
